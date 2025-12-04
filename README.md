@@ -2,7 +2,7 @@
 
 A full-stack expense sharing application similar to Splitwise, built with **Spring Boot**, **Oracle Database**, and **React**.
 
-## 🚀 Features
+##  Features
 - **User Management:** JWT Authentication, Login/Signup.
 - **Group Management:** Create groups, add/remove members using Set logic.
 - **Expense Tracking:**
@@ -14,12 +14,12 @@ A full-stack expense sharing application similar to Splitwise, built with **Spri
 - **Audit Trail:** Complete history of all transactions.
 - **Dark Theme UI:** Modern, responsive interface.
 
-## 🛠 Tech Stack
+##  Tech Stack
 - **Backend:** Java 17, Spring Boot 3, Spring Security (JWT), JPA/Hibernate.
 - **Database:** Oracle Database.
 - **Frontend:** React.js, Lucide Icons, Axios.
 
-## ⚙️ Setup Instructions
+##  Setup Instructions
 
 ### Backend
 1. Navigate to `backend/`.
@@ -33,6 +33,6 @@ A full-stack expense sharing application similar to Splitwise, built with **Spri
 3. Run `npm start`.
 4. App opens at `http://localhost:3000`.
 
-## 🧪 Testing
+##  Testing
 - **Backend:** Run `mvn test` to execute JUnit test cases for Services and Logic.
 - **Frontend:** Run `npm test` to verify UI rendering.
