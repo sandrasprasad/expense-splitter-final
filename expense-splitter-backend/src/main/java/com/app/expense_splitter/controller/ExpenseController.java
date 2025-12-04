@@ -27,7 +27,6 @@ public class ExpenseController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<AddExpenseResponse> getExpense(@PathVariable Long id) {
-        // You'll need to add this method to ExpenseService interface & impl
         return ResponseEntity.ok(expenseService.getExpenseById(id));
     }
 

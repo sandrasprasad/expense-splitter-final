@@ -56,9 +56,6 @@ public class SecurityConfig {
         return config.getAuthenticationManager();
     }
 
-    // ================================
-    // GLOBAL CORS CONFIGURATION
-    // ================================
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

@@ -1,7 +1,12 @@
 package com.app.expense_splitter.model.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
 public class ErrorResponse {
 
     private boolean success;
@@ -11,29 +16,7 @@ public class ErrorResponse {
     public ErrorResponse(boolean success, String message) {
         this.success = success;
         this.errorMessage = message;
-        this.timestamp = LocalDateTime.now().toString();  // ⭐ timestamp added here
-    }
-    public boolean isSuccess() {
-        return success;
+        this.timestamp = LocalDateTime.now().toString();
     }
 
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
 }

@@ -15,8 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor // Generates constructor for final fields
-@Slf4j // Use this for logging
+@RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -43,7 +43,6 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
         log.info("User registered successfully: {}", savedUser.getId()); // Logging
 
-        // Map to Response DTO
         UserRegisterResponse response = new UserRegisterResponse();
         response.setId(savedUser.getId());
         response.setName(savedUser.getName());

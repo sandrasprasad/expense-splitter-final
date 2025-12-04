@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j // Enables 'log.info' for the Audit Trail requirement
+@Slf4j
 public class SettlementServiceImpl implements SettlementService {
 
     private final SettlementRepository settlementRepository;
@@ -33,7 +33,6 @@ public class SettlementServiceImpl implements SettlementService {
     @Transactional
     public SettlementResponse recordSettlement(SettlementRequest req) {
 
-        // 1. Fetch Entities
         ExpenseGroup group = groupRepository.findById(req.getGroupId())
                 .orElseThrow(() -> new IllegalArgumentException("Group not found"));
 
@@ -43,7 +42,6 @@ public class SettlementServiceImpl implements SettlementService {
         User toUser = userRepository.findById(req.getToUser())
                 .orElseThrow(() -> new IllegalArgumentException("Receiver (To) not found"));
 
-        // 2. Validate Membership (Defensive Programming)
         boolean isPayerInGroup = group.getMembers().stream().anyMatch(u -> u.getId().equals(fromUser.getId()));
         boolean isReceiverInGroup = group.getMembers().stream().anyMatch(u -> u.getId().equals(toUser.getId()));
 
@@ -52,17 +50,13 @@ public class SettlementServiceImpl implements SettlementService {
             throw new IllegalArgumentException("Both users must be members of the group to settle up.");
         }
 
-        // 3. Create Settlement
         Settlement settlement = new Settlement();
         settlement.setGroup(group);
         settlement.setFromUser(fromUser);
         settlement.setToUser(toUser);
-        settlement.setAmount(BigDecimal.valueOf(req.getAmount())); // Convert double to BigDecimal
-
-        // 4. Save
+        settlement.setAmount(BigDecimal.valueOf(req.getAmount()));
         Settlement saved = settlementRepository.save(settlement);
 
-        // 5. AUDIT TRAIL LOGGING
         log.info("AUDIT: Settlement recorded. ID: {}, Group: {}, {} paid {} amount: {}",
                 saved.getId(), group.getName(), fromUser.getEmail(), toUser.getEmail(), req.getAmount());
 
@@ -80,20 +74,18 @@ public class SettlementServiceImpl implements SettlementService {
 
     @Override
     public List<SettlementResponse> getSettlementsForGroup(Long groupId) {
-        // Return DTOs, not Entities, to prevent JSON recursion issues
         return settlementRepository.findByGroupId(groupId).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // Helper to map Entity -> DTO
     private SettlementResponse mapToResponse(Settlement s) {
         SettlementResponse resp = new SettlementResponse();
         resp.setId(s.getId());
         resp.setGroupId(s.getGroup().getId());
         resp.setFromUser(s.getFromUser().getId());
         resp.setToUser(s.getToUser().getId());
-        resp.setAmount(s.getAmount().doubleValue()); // Convert back for JSON
+        resp.setAmount(s.getAmount().doubleValue());
         resp.setTimestamp(s.getTimestamp());
         return resp;
     }

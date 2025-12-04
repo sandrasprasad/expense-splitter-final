@@ -11,7 +11,4 @@ public interface ExpenseService {
     GroupBalanceResponse calculateGroupBalance(Long groupId);
     AddExpenseResponse getExpenseById(Long id);
 
-    // Expense editExpense(Long id, EditExpenseRequest request);
-    // void deleteExpense(Long id);
-    // List<Expense> getGroupExpenses(Long groupId);
 }
