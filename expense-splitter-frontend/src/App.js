@@ -7,15 +7,13 @@ import {
 import api from './api';
 import './App.css';
 
-// --- MAIN APP COMPONENT ---
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
   const [activeGroupId, setActiveGroupId] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(false);
 
-  // Global Alert State
-  const [alertInfo, setAlertInfo] = useState(null); 
+  const [alertInfo, setAlertInfo] = useState(null);
 
   const showAlert = (title, msg, type='error') => setAlertInfo({title, msg, type});
   const closeAlert = () => setAlertInfo(null);
@@ -60,7 +58,6 @@ function App() {
             groupId={activeGroupId} 
             currentUser={user} 
             showAlert={showAlert}
-            // When leaving/deleting, go back to dashboard & refresh list
             onExitGroup={() => { setActiveGroupId(null); triggerRefresh(); }}
           />
         ) : (
@@ -179,7 +176,7 @@ function Dashboard({ currentUser, setActiveGroupId, refreshTrigger }) {
     );
 }
 
-// --- GROUP VIEW (Updated with Leave Group) ---
+// --- GROUP VIEW  ---
 function GroupView({ groupId, currentUser, showAlert, onExitGroup }) {
   const [group, setGroup] = useState(null);
   const [balances, setBalances] = useState(null);
@@ -249,7 +246,7 @@ function GroupView({ groupId, currentUser, showAlert, onExitGroup }) {
       } catch (e) { showAlert("Error", "Export failed"); }
   };
 
-  // --- NEW: DELETE GROUP ---
+  // --- DELETE GROUP ---
   const handleDeleteGroup = async () => {
       if(!window.confirm("ARE YOU SURE? This deletes everything.")) return;
       try {
@@ -258,16 +255,14 @@ function GroupView({ groupId, currentUser, showAlert, onExitGroup }) {
       } catch(e) { showAlert("Error", "Could not delete group"); }
   };
 
-  // --- NEW: LEAVE GROUP ---
+  // --- LEAVE GROUP ---
   const handleLeaveGroup = async () => {
       if(!window.confirm("Leave this group? You must have 0 balance.")) return;
       try {
-          // Removes CURRENT USER from group
           await api.delete(`/groups/${groupId}/members/${currentUser.userId}`);
           onExitGroup();
           showAlert("Success", "You left the group", "success");
       } catch(e) {
-          // SAFE ERROR HANDLING: Check if it's an object or string
           let msg = "Could not leave group";
           if (e.response && e.response.data) {
               msg = typeof e.response.data === 'object' ? (e.response.data.errorMessage || "Error") : e.response.data;
@@ -276,7 +271,7 @@ function GroupView({ groupId, currentUser, showAlert, onExitGroup }) {
       }
   };
 
-  // --- NEW: REMOVE OTHER MEMBER ---
+  // --- REMOVE OTHER MEMBER ---
   const handleRemoveMember = async (memberId) => {
       if(!window.confirm("Remove this member?")) return;
       try {
@@ -495,18 +490,16 @@ function SettleModal({ settleData, currentUser, onClose, onSuccess, showAlert })
     );
 }
 
-// --- ADD EXPENSE MODAL (With Participant Selection) ---
+// --- ADD EXPENSE MODAL ---
 function AddExpenseModal({ groupId, members, currentUser, onClose, onSuccess, showAlert }) {
     const [title, setTitle] = useState('');
     const [amount, setAmount] = useState('');
     const [splitType, setSplitType] = useState('EQUAL'); 
     
-    // NEW: Track who is involved in this expense
     const [selectedIds, setSelectedIds] = useState([]);
     
     const [exactShares, setExactShares] = useState({});
 
-    // Initialize: Select Everyone by default
     useEffect(() => {
         const initialIds = members.map(m => m.id);
         setSelectedIds(initialIds);
@@ -518,7 +511,6 @@ function AddExpenseModal({ groupId, members, currentUser, onClose, onSuccess, sh
 
     const toggleParticipant = (id) => {
         if (selectedIds.includes(id)) {
-            // Prevent unchecking everyone (at least 1 person needed)
             if (selectedIds.length === 1) {
                 showAlert("Error", "At least one person must be involved.");
                 return;
@@ -550,8 +542,6 @@ function AddExpenseModal({ groupId, members, currentUser, onClose, onSuccess, sh
                 return; 
             }
             
-            // Map shares specifically for the backend List<Double>
-            // The backend expects the values to correspond to the participants list order
             exactList = selectedIds.map(id => exactShares[id] || 0);
         }
 
@@ -562,7 +552,7 @@ function AddExpenseModal({ groupId, members, currentUser, onClose, onSuccess, sh
                 amount: numAmount, 
                 paidBy: currentUser.userId, 
                 splitType, 
-                participants: selectedIds, // Send only selected IDs
+                participants: selectedIds,
                 exactAmounts: exactList 
             }); 
             onSuccess(); 
@@ -643,7 +633,6 @@ function AuthPage({ onLogin, showAlert }) {
         if(isRegister) { showAlert("Success", "Account created! Please Login.", "success"); setIsRegister(false); }
         else onLogin(res.data.token, { userId: res.data.userId, name: res.data.name });
       } catch(e) { 
-          // FIX: Handle both string and object error responses safely
           let msg = "Authentication failed";
           if (e.response && e.response.data) {
               msg = typeof e.response.data === 'object' ? (e.response.data.errorMessage || "Check credentials") : e.response.data;
