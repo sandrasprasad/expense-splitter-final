@@ -15,10 +15,10 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String action;       // e.g., "SETTLEMENT", "EXPENSE_ADDED"
-    private Long groupId;        // Context
-    private String performedBy;  // User Email or Name
-    private String details;      // e.g., "Bob paid Alice 50.00"
+    private String action;
+    private Long groupId;
+    private String performedBy;
+    private String details;
 
     private LocalDateTime timestamp;
 

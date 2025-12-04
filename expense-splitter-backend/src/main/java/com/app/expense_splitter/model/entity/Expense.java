@@ -21,7 +21,6 @@ public class Expense {
 
     private String title;
 
-    // CHANGED: Use BigDecimal for precision
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
@@ -39,59 +38,4 @@ public class Expense {
     @OneToMany(mappedBy = "expense", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExpenseShare> shares = new ArrayList<>();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public ExpenseGroup getGroup() {
-        return group;
-    }
-
-    public void setGroup(ExpenseGroup group) {
-        this.group = group;
-    }
-
-    public User getPaidBy() {
-        return paidBy;
-    }
-
-    public void setPaidBy(User paidBy) {
-        this.paidBy = paidBy;
-    }
-
-    public SplitType getSplitType() {
-        return splitType;
-    }
-
-    public void setSplitType(SplitType splitType) {
-        this.splitType = splitType;
-    }
-
-    public List<ExpenseShare> getShares() {
-        return shares;
-    }
-
-    public void setShares(List<ExpenseShare> shares) {
-        this.shares = shares;
-    }
 }

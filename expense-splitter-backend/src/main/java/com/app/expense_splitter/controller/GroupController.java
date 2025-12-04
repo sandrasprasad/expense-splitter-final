@@ -40,8 +40,6 @@ public class GroupController {
             @RequestBody @Valid CreateGroupRequest request,
             java.security.Principal principal
     ) {
-        // SECURITY IMPROVEMENT: Get ID from the token, not the user input
-        // Assuming principal.getName() returns the email
         ExpenseGroup created = groupService.createGroup(request, principal.getName());
         return ResponseEntity.ok(mapToGroupResponse(created));
     }
@@ -65,7 +63,6 @@ public class GroupController {
         return ResponseEntity.ok(expenseService.calculateGroupBalance(groupId));
     }
 
-    // Extracted Mapper Method
     private CreateGroupResponse mapToGroupResponse(ExpenseGroup group) {
         CreateGroupResponse resp = new CreateGroupResponse();
         resp.setId(group.getId());

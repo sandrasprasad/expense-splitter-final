@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.List;
 
@@ -41,7 +42,6 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public ExpenseGroup createGroup(CreateGroupRequest groupRequest, String creatorEmail) {
-        // Fetch user by Email (from Token)
         User creator = userRepository.findByEmail(creatorEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Authenticated user not found"));
 
@@ -49,7 +49,6 @@ public class GroupServiceImpl implements GroupService {
         expenseGroup.setName(groupRequest.getName());
         expenseGroup.setCreatedBy(creator.getId());
 
-        // Initialize set and add creator
         expenseGroup.setMembers(new HashSet<>());
         expenseGroup.getMembers().add(creator);
 
@@ -65,7 +64,7 @@ public class GroupServiceImpl implements GroupService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User with email " + email + " not found"));
 
-        expenseGroup.getMembers().add(user); // Set handles duplicates automatically
+        expenseGroup.getMembers().add(user);
         return groupRepository.save(expenseGroup);
     }
 
@@ -75,25 +74,20 @@ public class GroupServiceImpl implements GroupService {
         ExpenseGroup group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new IllegalArgumentException("Group not found"));
 
-        // 1. VALIDATION: Check if user has outstanding balance
-        // We call the existing calculation logic
         var balanceSheet = expenseService.calculateGroupBalance(groupId);
         var userBalance = balanceSheet.getBalances().stream()
                 .filter(b -> b.getUserId().equals(memberId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("User not found in balance sheet"));
 
-        // Allow small floating point difference
         if (Math.abs(userBalance.getNetBalance()) > 0.1) {
             throw new IllegalStateException("Cannot remove member. They have an outstanding balance of " + userBalance.getNetBalance());
         }
 
-        // 2. Remove User
         User userToRemove = userRepository.findById(memberId).orElseThrow();
         group.getMembers().remove(userToRemove);
         groupRepository.save(group);
 
-        // 3. Audit
         auditLogRepository.save(new com.app.expense_splitter.model.entity.AuditLog(
                 "MEMBER_REMOVED", groupId, "System", "Removed member " + userToRemove.getName()
         ));
@@ -102,14 +96,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public void deleteGroup(Long groupId) {
-        // 1. Clean up children (Expenses, Settlements, AuditLogs)
-        // Note: If you have CascadeType.ALL in entities, this might happen automatically,
-        // but manual deletion is safer for existing databases.
+
         auditLogRepository.deleteAll(auditLogRepository.findByGroupIdOrderByTimestampDesc(groupId));
         settlementRepository.deleteAll(settlementRepository.findByGroupId(groupId));
         expenseRepository.deleteAll(expenseRepository.findByGroupId(groupId));
 
-        // 2. Delete Group
         groupRepository.deleteById(groupId);
     }
 
@@ -119,13 +110,11 @@ public class GroupServiceImpl implements GroupService {
         List<com.app.expense_splitter.model.entity.Expense> expenses = expenseRepository.findByGroupId(groupId);
 
         StringBuilder csv = new StringBuilder();
-        // HEADER
         csv.append("Date,Description,Total Amount,Paid By,Split Type\n");
 
-        // ROWS
         for (var exp : expenses) {
             csv.append(String.format("%s,%s,%.2f,%s,%s\n",
-                    "DATE", // You might want to add a CreatedAt field to Expense entity if not exists
+                    LocalTime.now(),
                     exp.getTitle(),
                     exp.getAmount(),
                     exp.getPaidBy().getName(),

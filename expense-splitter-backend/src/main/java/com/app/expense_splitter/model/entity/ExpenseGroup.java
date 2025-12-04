@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "EXPENSE_GROUPS") // "GROUP" is a reserved keyword in Oracle!
+@Table(name = "EXPENSE_GROUPS")
 @Getter
 @Setter
 public class ExpenseGroup {
@@ -27,7 +27,6 @@ public class ExpenseGroup {
 
     private String name;
 
-    // Ideally, this should be a User object, but ID is fine for MVP
     private Long createdBy;
 
     @ManyToMany(fetch = FetchType.LAZY)

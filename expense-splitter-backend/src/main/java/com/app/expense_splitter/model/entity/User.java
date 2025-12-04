@@ -18,7 +18,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Include // <--- FIX 2: Identity is determined ONLY by ID
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false)

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "SETTLEMENTS") // Naming convention
+@Table(name = "SETTLEMENTS")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,20 +27,18 @@ public class Settlement {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_user", nullable = false)
-    private User fromUser; // The person PAYING (Debtor)
+    private User fromUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_user", nullable = false)
-    private User toUser;   // The person RECEIVING (Creditor)
+    private User toUser;
 
-    // CHANGED: Use BigDecimal for financial precision
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal amount;
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
-    // Lifecycle hook to set timestamp automatically before saving
     @PrePersist
     protected void onCreate() {
         if (this.timestamp == null) {

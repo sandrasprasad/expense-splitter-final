@@ -9,10 +9,9 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    // Use a 256-bit key (store in config or env in prod)
+
     private final Key key = Keys.hmacShaKeyFor(
-            // replace with a secure key loaded from application.properties in production
-            "replace_this_with_a_long_secret_key_at_least_32_bytes_long!".getBytes()
+            "d64b8451a5e9fda38c15409be947a6fd3df3fdc53ef9cc3d7df9790c6ab1a842".getBytes()
     );
 
     private final long validityMillis = 1000L * 60 * 60 * 24; // 24h
