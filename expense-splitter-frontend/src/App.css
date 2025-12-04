@@ -1,9 +1,9 @@
 :root {
-  --primary: #1cc29f;      /* Splitwise Teal */
-  --danger: #ff652f;       /* Splitwise Orange */
-  --bg-main: #121212;      /* Deep Black */
-  --bg-sidebar: #0f0f0f;   /* Darker Black */
-  --bg-card: #1e1e1e;      /* Card Grey */
+  --primary: #1cc29f;
+  --danger: #ff652f;
+  --bg-main: #121212;
+  --bg-sidebar: #0f0f0f;
+  --bg-card: #1e1e1e;
   --border: #333;
   --text: #fff;
   --text-muted: #aaa;
@@ -46,7 +46,7 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; back
 .btn-dark:hover { background: #444; }
 
 /* --- CARDS (My Groups List) --- */
-.group-card { 
+.group-card {
     background: var(--bg-card); padding: 18px; margin: 10px 20px; border-radius: 8px; 
     border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; gap: 15px;
     transition: transform 0.1s, border-color 0.2s;
