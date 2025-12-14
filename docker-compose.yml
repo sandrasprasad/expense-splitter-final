@@ -1,26 +1,23 @@
 version: '3.8'
 
 services:
-  # 1. ORACLE DATABASE (Renamed to fairshare-oracle)
   fairshare-oracle:
     image: gvenzl/oracle-xe:21-slim
-    container_name: fairshare-oracle  # <--- UNIQUE NAME
+    container_name: fairshare-oracle
     environment:
       ORACLE_PASSWORD: oracle
       APP_USER: FAIRSHARE
       APP_USER_PASSWORD: fairshare
     ports:
-      # Map to port 1522 on your host to avoid conflict with existing Oracle on 1521
       - "1522:1521" 
     volumes:
-      - fairshare_data:/opt/oracle/oradata # <--- UNIQUE VOLUME
+      - fairshare_data:/opt/oracle/oradata 
     healthcheck:
       test: ["CMD", "/opt/oracle/healthcheck.sh"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # 2. BACKEND
   backend:
     build: ./expense-splitter-backend
     container_name: fairshare-backend
@@ -30,13 +27,11 @@ services:
       fairshare-oracle:
         condition: service_healthy
     environment:
-      # CONNECT TO THE NEW NAME (fairshare-oracle)
       SPRING_DATASOURCE_URL: jdbc:oracle:thin:@fairshare-oracle:1521/xepdb1
       SPRING_DATASOURCE_USERNAME: FAIRSHARE
       SPRING_DATASOURCE_PASSWORD: fairshare
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
-  # 3. FRONTEND
   frontend:
     build: ./expense-splitter-frontend
     container_name: fairshare-frontend
