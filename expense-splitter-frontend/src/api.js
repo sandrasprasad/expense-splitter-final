@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:8082/api', // Match your Backend Port
+    baseURL: 'http://localhost:8082/api',
 });
 
 // Automatically add Token to headers
