@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+      image: postgres:15-alpine
+      container_name: postgres_db
+      environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=mysecretpassword
+        - POSTGRES_DB=myappdb
+      volumes:
+        - db_data:/var/lib/postgresql/data
+      networks:
+        - app-network
+
+  backend:
+    build: ./expense-splitter-backend
+    container_name: fairshare-backend
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/myappdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=mysecretpassword
+    networks:
+      - app-network
+
+  frontend:
+    build: ./expense-splitter-frontend
+    container_name: fairshare-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge
