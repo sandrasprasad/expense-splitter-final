@@ -2,17 +2,21 @@ package com.app.expense_splitter.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private final Key key = Keys.hmacShaKeyFor(
-            "d64b8451a5e9fda38c15409be947a6fd3df3fdc53ef9cc3d7df9790c6ab1a842".getBytes()
-    );
+    private final Key key;
+
+    public JwtUtil(@Value("${app.jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     private final long validityMillis = 1000L * 60 * 60 * 24; // 24h
 

@@ -164,7 +164,7 @@ public class ExpenseServiceImpl implements ExpenseService {
             return dto;
         }).collect(Collectors.toList());
 
-        List<SettlementRequest> suggestedSettlements = computeSettlements(netBalances);
+        List<SettlementRequest> suggestedSettlements = computeSettlements(groupId, netBalances);
 
         GroupBalanceResponse response = new GroupBalanceResponse();
         response.setGroupId(groupId);
@@ -174,49 +174,8 @@ public class ExpenseServiceImpl implements ExpenseService {
         return response;
     }
 
-    private List<SettlementRequest> computeSettlements(Map<Long, BigDecimal> netBalances) {
-        List<SettlementRequest> result = new ArrayList<>();
-
-        class BalanceNode {
-            Long userId;
-            BigDecimal amount;
-            BalanceNode(Long id, BigDecimal amt) { this.userId = id; this.amount = amt; }
-        }
-
-        List<BalanceNode> debtors = new ArrayList<>();
-        List<BalanceNode> creditors = new ArrayList<>();
-
-        for (Map.Entry<Long, BigDecimal> entry : netBalances.entrySet()) {
-            if (entry.getValue().compareTo(new BigDecimal("-0.01")) < 0) {
-                debtors.add(new BalanceNode(entry.getKey(), entry.getValue()));
-            } else if (entry.getValue().compareTo(new BigDecimal("0.01")) > 0) {
-                creditors.add(new BalanceNode(entry.getKey(), entry.getValue()));
-            }
-        }
-
-        int i = 0;
-        int j = 0;
-
-        while (i < debtors.size() && j < creditors.size()) {
-            BalanceNode debtor = debtors.get(i);
-            BalanceNode creditor = creditors.get(j);
-
-            BigDecimal amount = debtor.amount.abs().min(creditor.amount);
-
-            SettlementRequest req = new SettlementRequest();
-            req.setFromUser(debtor.userId);
-            req.setToUser(creditor.userId);
-            req.setAmount(amount.doubleValue());
-            result.add(req);
-
-            debtor.amount = debtor.amount.add(amount);
-            creditor.amount = creditor.amount.subtract(amount);
-
-            if (debtor.amount.abs().compareTo(new BigDecimal("0.01")) < 0) i++;
-            if (creditor.amount.abs().compareTo(new BigDecimal("0.01")) < 0) j++;
-        }
-
-        return result;
+    private List<SettlementRequest> computeSettlements(Long groupId, Map<Long, BigDecimal> netBalances) {
+        return MinCashFlowSolver.solve(groupId, netBalances);
     }
 
     private AddExpenseResponse mapToResponse(Expense expense) {

@@ -62,6 +62,7 @@ public class SecurityConfig {
         config.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",  // frontend
                 "http://localhost:5173",
+                "http://localhost:4200",  // Angular dev server
                 "http://localhost:8082"// (if using Vite)
         ));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));

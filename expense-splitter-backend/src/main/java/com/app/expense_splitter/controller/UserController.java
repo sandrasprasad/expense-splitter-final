@@ -18,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin("http://localhost:5173/")
+@CrossOrigin({"http://localhost:5173", "http://localhost:4200"})
 @RequiredArgsConstructor
 public class UserController  {
 

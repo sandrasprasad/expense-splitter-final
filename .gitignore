@@ -1,0 +1,13 @@
+# IDE / editor
+.idea/
+.vim/
+.vscode/
+
+# Secrets and local config
+.env
+*.local
+
+# Build output
+target/
+node_modules/
+build/
